@@ -17,7 +17,8 @@ u"""Copyright 2015 Mariví Peláez
 
 import numpy as np
 import operator
-
+import matplotlib
+import matplotlib.pyplot as plt
 
 def create_dataset():
     """Creates the already-labeled dataset
@@ -64,3 +65,82 @@ def classify(test_vector, training_dataset, training_classes, k):
     sorted_class_count = sorted(class_count.iteritems(), key=operator.itemgetter(1), reverse=True)
 
     return sorted_class_count[0][0]
+
+
+def file_to_matrix(filename):
+    """Reads a data file and converts it into a matrix
+        filename format: field1, field2, field3, class
+
+    Execute:
+        >>> import ch2_knn.kNN as knn
+        >>> dating_matrix, dating_labels = knn.file_to_matrix('data/ch2/dating-test-set.txt')
+
+    :param filename: absolute path to the file containing the data
+    :returns: a matrix with the training examples and a vector with its classes
+    """
+
+    with open(filename) as f:
+        lines = f.readlines()
+        num_lines = len(lines)
+        result_mat = np.zeros((num_lines, 3))
+        class_labels = []
+
+        index = 0
+        for line in lines:
+            line = line.strip()
+            # Fields are tab separated
+            line_content = line.split('\t')
+            result_mat[index, :] = line_content[0: 3]
+
+            # Add label, that is the last field
+            class_labels.append(line_content[-1])
+
+            index += 1
+
+        return result_mat, class_labels
+
+
+def dating_scatter_plot0(dating_matrix):
+    """
+    Scatter plot for dating dataset, without differentiating labels
+
+    plot y = liters of ice cream consumed per week
+    plot x = % time spent playing video games
+
+    :param dating_matrix:
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.scatter(dating_matrix[:, 1], dating_matrix[:, 2])
+    plt.show()
+
+
+def dating_scatter_plot(dating_mat, dating_labels):
+    """Scatter plot for dating dataset, showing labels to make it easier to see the patterns
+
+    :param dating_mat: training dataset
+    :param dating_labels: clases of the training dataset
+    """
+    labels_num = {'didntLike': 0, 'smallDoses': 1, 'largeDoses': 2}
+
+    dating_labels_num = [labels_num[item] for item in dating_labels]
+
+    fig = plt.figure()
+
+    ax = fig.add_subplot(2, 1, 1)
+    ax.set_xlabel('% time spent playing video games')
+    ax.set_ylabel('liters of ice cream consumed per week')
+
+    # plot y = liters of ice cream consumed per week
+    # plot x = % time spent playing video games
+    ax.scatter(dating_mat[:, 1], dating_mat[:, 2], 15.0*np.array(dating_labels_num), 15.0*np.array(dating_labels_num))
+
+    # plot x = frequent flier miles earned per year
+    # plot y = % time spent playing video games
+
+    ax = fig.add_subplot(2, 1, 2)
+    ax.set_xlabel('frequent flier miles earned per year')
+    ax.set_ylabel('% time spent playing video games')
+    ax.scatter(dating_mat[:, 0], dating_mat[:, 1], 15.0*np.array(dating_labels_num), 15.0*np.array(dating_labels_num))
+
+    plt.show()
