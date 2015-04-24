@@ -196,3 +196,39 @@ def normalized_classifier_error_rate():
         if classified_result != dating_labels[i]:
             error_count += 1.0
     print('Total error rate is: {}'.format(error_count/float(num_tests_vectors)))
+
+
+def classify_person():
+    """Interactive predictive function for classifying people.
+    It will ask the user 3 features about the candidate:
+
+        * Percentage of time spent playing video games
+        * Frequent flier miles earned per year
+        * Liters of ice cream consumed per year
+
+    To execute it, launch a python console and:
+
+        >>> knn.classify_person()
+
+        Thanks for using our classifier!!
+        Please, let us know something about your candidate:
+
+        Percentage of time spent playing video games? 20
+        Frequent flier miles earned per year? 1000000
+        Liters of ice cream consumed per year? 1
+
+        You will probably like this person: didntLikes
+    """
+
+    # New candidate menu
+    print("\nThanks for using our classifier!!\nPlease, let us know something about your candidate:\n")
+    percent_tats = float(raw_input("Percentage of time spent playing video games? "))
+    frequent_flier = float(raw_input("Frequent flier miles earned per year? "))
+    ice_cream_liters = float(raw_input("Liters of ice cream consumed per year? "))
+
+    dating_data_mat, dating_labels = file_to_matrix(DATING_DATASET)
+    norm_dataset, ranges, min_values = normalizer(dating_data_mat)
+    new_person_definition = np.array([frequent_flier, percent_tats, ice_cream_liters])
+    new_person = (new_person_definition - min_values)/ranges
+    classifier_result = classify(new_person, norm_dataset, dating_labels, K)
+    print("\nYou will probably like this person: {}".format(classifier_result))
