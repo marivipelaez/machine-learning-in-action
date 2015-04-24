@@ -15,3 +15,13 @@ k-Nearest Neighbors algorithm (aka kNN) is a non-parametric method used for clas
 * Use: This application needs to get some input data and output structured numeric values. 
 Next, the application runs the kNN algorithm on this input data and determines which class the 
 input data should belong to. The application then takes some action on the calculated class.
+
+### Normalize values
+When comparing features which values that lie in different ranges it is recommended to normalize them. 
+Common ranges to normalize are 0 to 1 or -1 to 1. To normalize from 0 to 1:
+
+```python
+new_value = (old_value - min)/(max - min)
+```
+
+Where min and max are the smallest and biggest value per feature.

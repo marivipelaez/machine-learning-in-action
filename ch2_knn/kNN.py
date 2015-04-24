@@ -144,3 +144,25 @@ def dating_scatter_plot(dating_mat, dating_labels):
     ax.scatter(dating_mat[:, 0], dating_mat[:, 1], 15.0*np.array(dating_labels_num), 15.0*np.array(dating_labels_num))
 
     plt.show()
+
+
+def normalizer(dataset):
+    """Normalize the values of a dataset depending on its maximum and minimum values
+    :param dataset: dataset to be normalized
+    :returns: normalized dataset, ranges per column, min_values per column
+    """
+    # dataset.min(0) => Get minimum from the columns, not from the rows
+    min_values = dataset.min(0)
+    max_values = dataset.max(0)
+
+    # Get the values ranges per column
+    ranges = max_values - min_values
+
+    norm_dataset = np.zeros(np.shape(dataset))
+    m = dataset.shape[0]
+    # Tile creates a matrix of the same size of the input, and adds as many tiles (copies of itself)
+    # as marked in the second argument. In this case: min_values.shape=(1x3), and the output is a matrix
+    # of 1000x3, with 1000 copies of min_values
+    norm_dataset = dataset - np.tile(min_values, (m, 1))
+    norm_dataset = norm_dataset/np.tile(ranges, (m, 1))
+    return norm_dataset, ranges, min_values
