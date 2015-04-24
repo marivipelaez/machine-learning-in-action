@@ -158,7 +158,6 @@ def normalizer(dataset):
     # Get the values ranges per column
     ranges = max_values - min_values
 
-    norm_dataset = np.zeros(np.shape(dataset))
     m = dataset.shape[0]
     # Tile creates a matrix of the same size of the input, and adds as many tiles (copies of itself)
     # as marked in the second argument. In this case: min_values.shape=(1x3), and the output is a matrix
@@ -166,3 +165,34 @@ def normalizer(dataset):
     norm_dataset = dataset - np.tile(min_values, (m, 1))
     norm_dataset = norm_dataset/np.tile(ranges, (m, 1))
     return norm_dataset, ranges, min_values
+
+
+TRAINING_DATASET = 'data/ch2/trainingDigits'
+TEST_DATASET = 'data/ch2/testDigits'
+DATING_DATASET = 'data/ch2/dating-test-set.txt'
+K = 3
+
+
+def normalized_classifier_error_rate():
+    """Calculate error rate for kNN classifier for a normalized dataset.
+    This function uses 90% of the input dataset in training and the other 10% for testing
+    and calculating its error rate
+    """
+
+    # Percentage of training dataset used in testing and not in training
+    ho_ratio = 0.10
+    dating_data_mat, dating_labels = file_to_matrix(DATING_DATASET)
+    norm_dataset, ranges, min_values = normalizer(dating_data_mat)
+
+    m = norm_dataset.shape[0]
+    num_tests_vectors = int(m*ho_ratio)
+
+    error_count = 0.0
+
+    for i in range(num_tests_vectors):
+        classified_result = classify(norm_dataset[i, :], norm_dataset[num_tests_vectors:m, :],
+                                     dating_labels[num_tests_vectors: m], K)
+        print('The classifier came back with: {}, the real answer is: {}'.format(classified_result, dating_labels[i]))
+        if classified_result != dating_labels[i]:
+            error_count += 1.0
+    print('Total error rate is: {}'.format(error_count/float(num_tests_vectors)))
