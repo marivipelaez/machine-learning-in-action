@@ -80,6 +80,8 @@ this class.
 
 n is the number of classes.
 
+The higher the entropy, the higher the information gain of the data.
+
 **Gini impurity**
 
 Probability of choosing an item from the set and the probability of that item in being misclassified:

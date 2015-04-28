@@ -66,3 +66,71 @@ def get_simple_dataset():
     features = ['no surfacing', 'flippers']
 
     return dataset, features
+
+
+def split_dataset(dataset, axis, axis_value):
+    """Split the given dataset for the feature in axis, and taken into account its value in axis_value.
+
+        >>> import ch3_trees.trees as trees
+        >>> dataset, features = trees.get_simple_dataset()
+        >>> trees.split_dataset(dataset, 0, 1)
+        >>> [[1, 'yes'], [1, 'yes'], [0, 'no']]
+        >>> trees.split_dataset(dataset, 0, 0)
+        >>> [[1, 'no'], [1, 'no']]
+
+    :param dataset: list of lists. All the lists are of the same length. The last item in the list is the class
+    of the element.
+    :param axis: index of a feature in the element list
+    :param axis_value: value of the selected feature
+    :return: the same dataset without the already analyzed feature and only with those elements with the given value
+    """
+    # To not modify the original dataset, because it is a list of lists
+    reduced_dataset = []
+    for features in dataset:
+        if features[axis] == axis_value:
+            reduced_features = features[:axis]
+            reduced_features.extend(features[axis+1:])
+            reduced_dataset.append(reduced_features)
+
+    return reduced_dataset
+
+
+def choose_best_splitting_feature(dataset):
+    """Loops recursively through the whole dataset to determine the best feature to split it
+
+        >>> import ch3_trees.trees as trees
+        >>> dataset, features = trees.get_simple_dataset()
+        >>> trees.choose_best_splitting_feature(dataset)
+        >>> 0
+
+     This means that the feature in the first position (0) has the higher information gain.
+
+    :param dataset: list of lists. All the lists are of the same length. The last item in the list is the class
+    of the element. There is no assumptions on the type of the data.
+    :return: index of the best splitter feature of the dataset
+    """
+
+    # Do not count the class of the element in the number of features of the dataset
+    num_features = len(dataset[0]) - 1
+    # Entropy of the whole dataset without any splitting, latter use in comparisons
+    base_entropy = get_shannon_entropy(dataset)
+    best_info_gain = 0.0
+    best_feature = -1
+
+    for i in range(num_features):
+        # Creates a list with all the possible values of the feature i
+        features_list = [item[i] for item in dataset]
+        # Removes duplicate values
+        unique_values = set(features_list)
+        # Contains the entropy of the splitted dataset
+        current_entropy = 0.0
+        for value in unique_values:
+            splitted_dataset = split_dataset(dataset, i, value)
+            prob = len(splitted_dataset)/float(len(dataset))
+            # Sum up entropy for all the unique values of the feature in analysis
+            current_entropy += prob * get_shannon_entropy(splitted_dataset)
+        info_gain = base_entropy - current_entropy
+        if info_gain > best_info_gain:
+            best_info_gain = info_gain
+            best_feature = i
+    return best_feature
