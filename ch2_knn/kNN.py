@@ -17,8 +17,9 @@ u"""Copyright 2015 Mariví Peláez
 
 import numpy as np
 import operator
-import matplotlib
 import matplotlib.pyplot as plt
+from os import listdir, path
+
 
 def create_dataset():
     """Creates the already-labeled dataset
@@ -232,3 +233,54 @@ def classify_person():
     new_person = (new_person_definition - min_values)/ranges
     classifier_result = classify(new_person, norm_dataset, dating_labels, K)
     print("\nYou will probably like this person: {}".format(classifier_result))
+
+
+def img_to_vector(filename, number_of_pixels=32):
+    """Converts an image of 32x32 pixels into a vectorized element of 32x32
+
+    :param filename: abs path to the textual squared image file
+    :param number_of_pixels: number of pixels per side of the square
+    :returns: a matrix with
+    """
+    result = np.zeros((1, 1024))
+
+    with open(filename) as f:
+        for i in range(number_of_pixels):
+            line = f.readline()
+            for j in range(number_of_pixels):
+                result[0, number_of_pixels*i+j] = int(line[j])
+
+    return result
+
+
+def handwriting_classify_error_rate():
+    """Calculate error rate of kNN algorithm using handwriting dataset.
+    normalizer is not needed, values are already normalized from 0 to 1
+    Numbers files names are 9_45.txt = num_order.txt
+    """
+    classes = []
+    training_files = listdir(TRAINING_DATASET)
+    # Number of files in training folder
+    number_training_files = len(training_files)
+    training_dataset = np.zeros((number_training_files, 1024))
+
+    i = 0
+    for training_file in training_files:
+        number_class = int((path.splitext(training_file)[0]).split('_')[0])
+        classes.append(number_class)
+        training_dataset[i, :] = img_to_vector(path.join(TRAINING_DATASET, training_file))
+        i += 1
+
+    test_files = listdir(TEST_DATASET)
+    error_count = 0.0
+    for test_file in test_files:
+        number_class = int((path.splitext(test_file)[0]).split('_')[0])
+        test_vector = img_to_vector(path.join(TEST_DATASET, test_file))
+        classifier_result = classify(test_vector, training_dataset, classes, K)
+
+        print('The classifier came back with: {}, the real answer is: {}'.format(classifier_result, number_class))
+
+        if classifier_result != number_class:
+            error_count += 1.0
+    print('Total error rate is: {}'.format(error_count/float(len(test_files))))
+
