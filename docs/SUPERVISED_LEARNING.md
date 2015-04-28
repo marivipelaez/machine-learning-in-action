@@ -60,7 +60,7 @@ Defines the way of selecting the starting attribute used to generate a decision 
 [More info on ID3 algorithm](http://en.wikipedia.org/wiki/ID3_algorithm)
 
 It's a recursive algorithm, after every execution, takes the resulting branch dataset and selects a new starting attribute
-among the never selected before.
+among the never selected before. Every execution "consumes" an attribute.
 
 Recursion stops when:
 

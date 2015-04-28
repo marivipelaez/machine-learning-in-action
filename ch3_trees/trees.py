@@ -16,6 +16,7 @@ u"""Copyright 2015 Mariví Peláez
 """
 
 from math import log
+import operator
 
 
 def get_shannon_entropy(dataset):
@@ -52,10 +53,10 @@ def get_simple_dataset():
         >>> import ch3_trees.trees as trees
         >>> dataset, features = trees.get_simple_dataset()
         >>> print(get_shannon_entropy(dataset))
-        >>> 0.970950594455
+        0.970950594455
         >>> dataset[0][-1] = 'maybe'
         >>> print(get_shannon_entropy(dataset))
-        >>> 1.37095059445
+        1.37095059445
 
     :returns: (dataset, features)
         * the first element is a dataset, a list of list with three elements, [1, 1, 'yes'], it means that the
@@ -74,9 +75,9 @@ def split_dataset(dataset, axis, axis_value):
         >>> import ch3_trees.trees as trees
         >>> dataset, features = trees.get_simple_dataset()
         >>> trees.split_dataset(dataset, 0, 1)
-        >>> [[1, 'yes'], [1, 'yes'], [0, 'no']]
+        [[1, 'yes'], [1, 'yes'], [0, 'no']]
         >>> trees.split_dataset(dataset, 0, 0)
-        >>> [[1, 'no'], [1, 'no']]
+        [[1, 'no'], [1, 'no']]
 
     :param dataset: list of lists. All the lists are of the same length. The last item in the list is the class
     of the element.
@@ -101,7 +102,7 @@ def choose_best_splitting_feature(dataset):
         >>> import ch3_trees.trees as trees
         >>> dataset, features = trees.get_simple_dataset()
         >>> trees.choose_best_splitting_feature(dataset)
-        >>> 0
+        0
 
      This means that the feature in the first position (0) has the higher information gain.
 
@@ -134,3 +135,65 @@ def choose_best_splitting_feature(dataset):
             best_info_gain = info_gain
             best_feature = i
     return best_feature
+
+
+def get_majority_class(classes):
+    """Gets the class that happens the most in classes list
+    :param classes: list of classes
+    :return: the class that happens the most
+    """
+    num_class = {}
+    for clazz in classes:
+        if clazz not in num_class.keys():
+            num_class[clazz] = 0
+        num_class += 1
+    sorted_num_class = sorted(num_class.iteritems(), key=operator.itemgetter(1), reverse=True)
+    return sorted_num_class[0][0]
+
+
+def create_tree(dataset, feature_names):
+    """Creates a decision tree based on ID3, for the given dataset.
+
+        >>> import ch3_trees.trees as trees
+        >>> dataset, features = trees.get_simple_dataset()
+        >>> tree = trees.create_tree(dataset, features)
+        >>> tree
+        {'no surfacing': {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}}
+
+    :param dataset: list of lists. All the lists are of the same length. The last item in the list is the class
+    of the element.
+    :param feature_names: a list containing a name for each feature
+    :return: decision tree in the form of nested dictionaries.
+    """
+    # Creates a list with all the existing classes
+    classes_list = [item[-1] for item in dataset]
+
+    # Check if all element are of the same class, then stop
+    if classes_list.count(classes_list[0]) == len(classes_list):
+        return classes_list[0]
+
+    # When no more features, return majority
+    if len(dataset[0]) == 1:
+        return get_majority_class(classes_list)
+
+    # In any other case let's calculate tree
+    best_feature = choose_best_splitting_feature(dataset)
+    best_feature_class = feature_names[best_feature]
+
+    tree = {best_feature_class: {}}
+
+    # ID3 loops on each feature just once
+    del(feature_names[best_feature])
+
+    feature_values = [item[best_feature] for item in dataset]
+    unique_features_values = set(feature_values)
+
+    for value in unique_features_values:
+        # Deep copy of the feature names list
+        splitted_feature_list = feature_names[:]
+        # Using recursion to build next level
+        tree[best_feature_class][value] = create_tree(split_dataset(dataset, best_feature, value),
+                                                      splitted_feature_list)
+
+    return tree
+
