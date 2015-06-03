@@ -202,4 +202,3 @@ def create_tree_plot(tree):
     # The first time the whole tree is sent, with the selected starting point and without a text.
     plot_tree(tree, starting_point, '')
     plt.show()
-

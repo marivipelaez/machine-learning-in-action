@@ -197,3 +197,23 @@ def create_tree(dataset, feature_names):
 
     return tree
 
+# Using trees for classification
+
+def classify(input_tree, feature_lab, test_vector):
+    """
+    Recursive function to use a decision tree as classifier.
+    :param input_tree: Previous tree
+    :param feature_lab: array with the labels of the features
+    :param test_vector:
+    :return: string with the label of the class
+    """
+    first_key = input_tree.keys()[0]
+    second_level = input_tree[first_key]
+    feature_index = feature_lab.index(first_key)
+    for key in second_level.keys():
+        if test_vector[feature_index] == key:
+            if isinstance(second_level[key], dict):
+                label = classify(second_level[key], feature_lab, test_vector)
+            else:
+                label = second_level[key]
+    return label
