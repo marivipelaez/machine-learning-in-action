@@ -17,6 +17,7 @@ u"""Copyright 2015 Mariví Peláez
 
 from math import log
 import operator
+import pickle
 
 
 def get_shannon_entropy(dataset):
@@ -217,3 +218,24 @@ def classify(input_tree, feature_lab, test_vector):
             else:
                 label = second_level[key]
     return label
+
+
+def store_tree(tree, filename):
+    """ Stores a serialized tree in the given filename.
+
+    :param tree: dict-like object to be stored
+    :param filename: output file to write the content of the given tree.
+    :return: None
+    """
+    with open(filename, 'w') as fo:
+        pickle.dump(tree, fo)
+
+def grab_tree(filename):
+    """ Grabs the content of the given filename and deserializes it before returning.
+
+    :param filename: absolute path to the file which content is to be loaded.
+    :return: the deserialized content of the file.
+    """
+
+    with open(filename, 'r') as fo:
+        return pickle.load(fo)

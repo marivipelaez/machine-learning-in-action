@@ -17,7 +17,7 @@ using the following libraries (see requirements.txt):
 To avoid mixing things up, please use a virtualenv to isolate the project execution environment.
 
 ## Repository content
-There is a package per book chapter. Their names consist of 'ch<chapter>_<title>', in lower.
+There is a package per book chapter. Their names consist of 'ch{chapter}_{title}', in lower.
 Data is not included in the repository, as I'm using directly the datasets provided in the examples,
 that could be found in [the book github repository](https://github.com/pbharrin/machinelearninginaction).
 
@@ -27,3 +27,12 @@ the packages:
 ```shell
 $ pip install -r requirements.txt
 ```
+
+## AOT
+
+* Reloading modules in ipython:
+
+```python
+%dreload(already_imported_module)
+```
+
