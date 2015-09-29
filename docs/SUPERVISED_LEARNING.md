@@ -89,3 +89,7 @@ Probability of choosing an item from the set and the probability of that item in
     GI(t) = sum(n, i!= j)[p(i|t)p(j|t)]
 
 
+# Datasets
+
+* [Lenses dataset](http://archive.ics.uci.edu/ml/machine-learning-databases/lenses/) 
+

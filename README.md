@@ -30,6 +30,14 @@ $ pip install -r requirements.txt
 
 ## AOT
 
+* [Installing all ipython dependencies](http://ipython.org/ipython-doc/dev/install/install.html#installnotebook)
+
+```shell
+(venv)$ pip install ipython[all]
+```
+
+Then, access project notebooks from: http://localhost:8888/notebooks
+
 * Reloading modules in ipython:
 
 ```python

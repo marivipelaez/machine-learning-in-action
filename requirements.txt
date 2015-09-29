@@ -1,6 +1,6 @@
 numpy
 scipy
-ipython
+ipython[all]
 matplotlib
 seaborn
 pandas
