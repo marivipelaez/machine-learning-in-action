@@ -152,7 +152,7 @@ def get_majority_class(classes):
     return sorted_num_class[0][0]
 
 
-def create_tree(dataset, feature_names):
+def create_tree(dataset, labels):
     """Creates a decision tree based on ID3, for the given dataset.
 
         >>> import ch3_trees.trees as trees
@@ -163,9 +163,11 @@ def create_tree(dataset, feature_names):
 
     :param dataset: list of lists. All the lists are of the same length. The last item in the list is the class
     of the element.
-    :param feature_names: a list containing a name for each feature
+    :param labels: a list containing a name for each feature
     :return: decision tree in the form of nested dictionaries.
     """
+    # Copy the given labels list not to modify the external list
+    feature_names = list(labels)
     # Creates a list with all the existing classes
     classes_list = [item[-1] for item in dataset]
 
@@ -198,7 +200,10 @@ def create_tree(dataset, feature_names):
 
     return tree
 
+#
 # Using trees for classification
+#
+
 
 def classify(input_tree, feature_lab, test_vector):
     """
@@ -229,6 +234,7 @@ def store_tree(tree, filename):
     """
     with open(filename, 'w') as fo:
         pickle.dump(tree, fo)
+
 
 def grab_tree(filename):
     """ Grabs the content of the given filename and deserializes it before returning.
